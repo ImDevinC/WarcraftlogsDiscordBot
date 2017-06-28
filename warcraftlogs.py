@@ -1,5 +1,4 @@
 import private
-import requests
 import json
 import os.path, os.rename
 import discord
