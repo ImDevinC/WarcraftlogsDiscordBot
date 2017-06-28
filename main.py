@@ -80,7 +80,7 @@ async def newReport(report):
     
     message = report['author'] + ' has uploaded a new log. ' + boss + ' is ' + ('not ' if not boss_dead else '') + 'dead' 
     em = discord.Embed(title=report['title'], description=message, url=WCL_URL.format(report['id']))
-    await CLIENT.send_message(DISCORD_CHANNEL, message, False, em)
+    await CLIENT.send_message(DISCORD_CHANNEL, embed=em)
 
 def getTime():
     if not os.path.isfile('lastTime.conf'):
@@ -99,6 +99,7 @@ async def main_loop():
     while True:
         print('Getting reports...')
         reports = getReports()
+        print('Found ' + str(len(reports)) + ' reports')
         for report in reports:
             if not report in REPORTS:
                 REPORTS.append(report)
@@ -116,7 +117,8 @@ async def on_ready():
                 break
             if DISCORD_CHANNEL is not None:
                 break
-    await main_loop()
+    if DISCORD_CHANNEL is not None:
+        await main_loop()
 
 if __name__ == '__main__':
     LAST_TIME = getTime()
