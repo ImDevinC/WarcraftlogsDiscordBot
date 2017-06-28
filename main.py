@@ -77,8 +77,10 @@ async def newReport(report):
         print('Unable to get fight information for report ' + report['id'])
         return
 
-    message = report['author'] + ' has uploaded a new log. ' + boss + ' is ' + ('not ' if not boss_dead else '') + 'dead\n' + WCL_URL.format(report['id'])
-    await CLIENT.send_message(DISCORD_CHANNEL, message)
+    
+    message = report['author'] + ' has uploaded a new log. ' + boss + ' is ' + ('not ' if not boss_dead else '') + 'dead' 
+    em = discord.Embed(title=report['title'], description=message, url=WCL_URL.format(report['id']))
+    await CLIENT.send_message(DISCORD_CHANNEL, message, False, em)
 
 def getTime():
     if not os.path.isfile('lastTime.conf'):
@@ -117,9 +119,8 @@ async def on_ready():
     await main_loop()
 
 if __name__ == '__main__':
-    try:
-        LAST_TIME = getTime()
-        print('Getting zones...')
-        ZONES = getZones()
-        print('Connecting to Discord...')
-        CLIENT.run(private.DISCORD_TOKEN)
+    LAST_TIME = getTime()
+    print('Getting zones...')
+    ZONES = getZones()
+    print('Connecting to Discord...')
+    CLIENT.run(private.DISCORD_TOKEN)
