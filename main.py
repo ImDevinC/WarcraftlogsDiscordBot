@@ -2,23 +2,21 @@ import private
 import discord
 import warcraftlogs
 import time
+import logging
 
-CLIENT = discord.Client()
-DISCORD_CHANNEL = None
+client = discord.Client()
 
-@CLIENT.event
+async def warcraftlogs_parser(client):
+    await client.wait_until_ready()
+    channel = discord.Object(id=private.DISCORD_CHANNEL)
+    if channel is not None:
+        await warcraftlogs.main_loop(client, channel)
+
+@client.event
 async def on_ready():
-    global DISCORD_CHANNEL
-    for server in CLIENT.servers:
-        for channel in server.channels:
-            if channel.name == private.CHANNEL_NAME:
-                DISCORD_CHANNEL = channel
-                break
-            if DISCORD_CHANNEL is not None:
-                break
-    if DISCORD_CHANNEL is not None:
-        await warcraftlogs.main_loop(CLIENT, DISCORD_CHANNEL)
+    print('Logged in')
 
 if __name__ == '__main__':
     print('Connecting to Discord...')
-    CLIENT.run(private.DISCORD_TOKEN)
+    client.loop.create_task(warcraftlogs_parser(client))
+    client.run(private.DISCORD_TOKEN)

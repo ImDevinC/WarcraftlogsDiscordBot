@@ -2,7 +2,7 @@
 # Discord information
 #
 DISCORD_TOKEN = '' # Enter your bot's API token
-CHANNEL_NAME = '' # Enter the discord channel name you want to connect to on your server (leave out the leading #)
+DISCORD_CHANNEL = '' # The ID of the Discord channel to connect to
 
 #
 # Warcraft Logs Information
