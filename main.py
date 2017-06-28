@@ -16,8 +16,6 @@ LAST_TIME = 0
 CLIENT = discord.Client()
 DISCORD_CHANNEL = None
 
-# logging.basicConfig(level=logging.DEBUG)
-
 def getZones():
     r = requests.get(ZONES_URL.format(private.API_KEY))
     json_zones = r.json()
@@ -79,7 +77,7 @@ async def newReport(report):
 
     
     message = report['author'] + ' has uploaded a new log. ' + boss + ' is ' + ('not ' if not boss_dead else '') + 'dead' 
-    em = discord.Embed(title=report['title'], description=message, url=WCL_URL.format(report['id']))
+    em = discord.Embed(title=report['title'], description=message, url=WCL_URL.format(report['id']), color=0x8BC34A if boss_dead else 0xF44336)
     await CLIENT.send_message(DISCORD_CHANNEL, embed=em)
 
 def getTime():
@@ -90,6 +88,7 @@ def getTime():
         return int(f.read())
 
 def saveTime():
+    global LAST_TIME
     LAST_TIME = int(time.time() * 1000)
     f = open('lastTime.conf', 'w')
     f.write(str(LAST_TIME))
