@@ -18,7 +18,7 @@ async def warcraftlogs_parser(client):
 async def affixes():
     affixes = await mythics.getAffixes()
     if affixes is not None:
-        await client.say('This weeks affixe are: ' + affixes)
+        await client.say('This weeks affixes are: ' + affixes)
     else:
         await client.say('Sorry, I couldn\'t get the affixes for some reason. Try again later')
 
