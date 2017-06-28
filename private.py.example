@@ -1,6 +1,0 @@
-DISCORD_TOKEN = '' # Discord bot token
-API_KEY = '' # Warcraft logs API key
-GUILD_NAME = '' # Guild name, exactly as printed in game
-SERVER_NAME = '' # Server name in GAME
-REGION = '' # Two character server region. e.g.: US
-CHANNEL_NAME = '' # The name of the Discord channel to connect to
