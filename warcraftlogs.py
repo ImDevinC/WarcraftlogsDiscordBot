@@ -87,6 +87,7 @@ async def newReport(report, zones, client, channel):
     em = discord.Embed(title=report['title'], description=message, url=WCL_URL.format(report['id']), color=0x8BC34A if boss_dead else 0xF44336)
     em.set_thumbnail(url=TN_IMG_URL.format(zone_id))
     await client.send_message(channel, embed=em)
+    return int(report['time'] + 1)
 
 def getTime():
     if not os.path.isfile('lastTime.conf'):
@@ -126,5 +127,5 @@ async def main_loop(client, channel):
         for report in new_reports:
             if not report in all_reports:
                 all_reports.append(report)
-                await newReport(report, zones, client, channel)
+                last_time = await newReport(report, zones, client, channel)
         await asyncio.sleep(60 * 5)
