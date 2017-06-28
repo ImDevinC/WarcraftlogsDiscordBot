@@ -1,6 +1,6 @@
 import private
 import json
-import os.path, os.rename
+import os
 import discord
 import asyncio
 import aiohttp
