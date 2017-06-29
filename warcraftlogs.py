@@ -53,6 +53,13 @@ async def newReport(report, zones, client, channel):
     if not 'fights' in json_report:
         print('Unable to get fights from report ' + report['id'])
         return
+
+    bosses_dead = 0
+    for fight in json_report['fights']:
+        if not 'kill' in fight:
+            continue
+        if fight['kill'] == True:
+            bosses_dead += 1
     
     boss_report = None
     for i in reversed(json_report['fights']):
@@ -83,8 +90,8 @@ async def newReport(report, zones, client, channel):
         return
 
     saveTime(report['time'])
-    message = report['author'] + ' has uploaded a new log for ' + zone + '. ' + boss + ' is ' + ('not ' if not boss_dead else '') + 'dead' 
-    em = discord.Embed(title=report['title'], description=message, url=WCL_URL.format(report['id']), color=0x8BC34A if boss_dead else 0xF44336)
+    message = report['author'] + ' has uploaded a new log for ' + zone + '. Last attempt: ' + boss + ' is ' + ('not ' if not boss_dead else '') + 'dead' 
+    em = discord.Embed(title=report['title'] + ' -- ' + str(bosses_dead) + ' bosses down', description=message, url=WCL_URL.format(report['id']), color=0x8BC34A if boss_dead else 0xF44336)
     em.set_thumbnail(url=TN_IMG_URL.format(zone_id))
     await client.send_message(channel, embed=em)
     return int(report['time'] + 1)
@@ -109,6 +116,9 @@ def saveTime(time):
     except Exception as ex:
         print('Unable to save lastTime', ex)
         return
+    
+    if os.path.isfile('lastTime.conf'):
+        os.remove('lastTime.conf')
     os.rename('lastTime.tmp', 'lastTime.conf')
 
 async def main_loop(client, channel):

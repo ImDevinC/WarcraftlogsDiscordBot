@@ -3,6 +3,7 @@ import discord
 from discord.ext import commands
 import warcraftlogs
 import mythics
+import asyncio
 
 # client = discord.Client()
 description = '''I'm LogBot! I constantly search for new Warcraft Logs and can provide some other information'''
@@ -21,6 +22,17 @@ async def affixes():
         await client.say('This weeks affixes are: ' + affixes)
     else:
         await client.say('Sorry, I couldn\'t get the affixes for some reason. Try again later')
+
+@client.command(description='Get\'s characters highest mythic+ for this week')
+async def highest(character):
+    result = await mythics.getHighest(character, 'borean-tundra')
+    if result['success'] == False:
+        message = result['message']
+    elif result['highest'] == 0:
+        message = result['name'] + ' has not completed a Mythic+ this week'
+    else:
+        message = result['name'] + ' has completed a ' + result['dungeon'] + ' +' + str(result['highest'])
+    await client.say(message)
 
 @client.event
 async def on_ready():
