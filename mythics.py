@@ -1,20 +1,22 @@
 import aiohttp
 
-async def getJsonData(url):
+BASE_URL = 'https://raider.io/api/v1/'
+
+async def getJsonData(url, params):
     async with aiohttp.ClientSession() as cs:
-        async with cs.get(url) as r:
+        async with cs.get(url, params=params) as r:
             json_data = await r.json()
             return json_data
 
 async def getAffixes():
-    json_affixes = await getJsonData('https://raider.io/api/v1/mythic-plus/affixes?region=US')
+    json_affixes = await getJsonData(BASE_URL + 'mythic-plus/affixes', {'region': 'US'})
     if not json_affixes is None and 'title' in json_affixes:
         return json_affixes['title']
     else:
         return None
 
 async def getHighest(player, realm):
-    json_result = await getJsonData('https://raider.io/api/v1/characters/profile?region=us&realm={0}&name={1}&fields=mythic_plus_weekly_highest_level_runs'.format(realm, player))
+    json_result = await getJsonData(BASE_URL + 'characters/profile', {'region': 'US', 'realm': realm, 'name': player, 'fields': 'mythic_plus_weekly_highest_level_runs'})
     if json_result is None:
         return {'success': False, 'message': 'Unable to get Mythic+ data'}
     if 'error' in json_result and 'message'in json_result:

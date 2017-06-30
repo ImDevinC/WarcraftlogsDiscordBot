@@ -12,3 +12,8 @@ GUILD_NAME = '' # Your guild name, including spaces
 SERVER_NAME = '' # Your server name. Use the slug format (ie: borean-tundra). Note that this is your crossrealm server, not your regular server
 REGION = '' # Two character region, US/CN/EU
 DEFAULT_REALM = '' # Used when a user doesn't pass realm in to the requests
+
+#
+# Battle.net Information
+#
+BNET_API = '' # Battle.net API from Mashery
