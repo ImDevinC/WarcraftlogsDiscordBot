@@ -24,14 +24,22 @@ async def affixes():
         await client.say('Sorry, I couldn\'t get the affixes for some reason. Try again later')
 
 @client.command(description='Get\'s characters highest mythic+ for this week')
-async def highest(character):
-    result = await mythics.getHighest(character, 'borean-tundra')
-    if result['success'] == False:
-        message = result['message']
-    elif result['highest'] == 0:
-        message = result['name'] + ' has not completed a Mythic+ this week'
+async def highest(*, character: str):
+    character = character.strip()
+    realm = 'borean-tundra'
+    if ' ' in character:
+        results = character.split(' ', maxsplit=1)
+        character = results[0]
+        realm = results[1].replace('\'', '').replace(' ', '-')
+
+
+    details = await mythics.getHighest(character, realm)
+    if details['success'] == False:
+        message = details['message']
+    elif details['highest'] == 0:
+        message = details['name'] + ' has not completed a Mythic+ this week'
     else:
-        message = result['name'] + ' has completed a ' + result['dungeon'] + ' +' + str(result['highest'])
+        message = details['name'] + ' has completed a ' + details['dungeon'] + ' +' + str(details['highest'])
     await client.say(message)
 
 @client.event
