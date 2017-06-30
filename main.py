@@ -74,7 +74,7 @@ async def ghighest(*, guild: str = None):
         await client.say('You\'re doing that too much, wait {0} seconds'.format(60 - (now - LAST_GHIGHEST)))
         return
     LAST_GHIGHEST = now
-    await client.say('Getting highest keys for members of {0}-{1}'.format(guild, realm))
+    await client.say('Getting highest keys for members of {0} on {1}'.format(guild, realm))
     result = await battlenet.getGuildMembers(guild, realm)
     if result['success'] == False:
         await client.say(result['message'])
