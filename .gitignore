@@ -2,3 +2,4 @@ __pycache__/*
 venv/*
 private.py
 lastTime.conf
+.python-version

@@ -7,7 +7,7 @@ import asyncio
 
 # client = discord.Client()
 description = '''I'm LogBot! I constantly search for new Warcraft Logs and can provide some other information'''
-client = commands.Bot(command_prefix='!', description=description)
+client = commands.Bot(command_prefix='!', description=description, pm_help=True)
 
 async def warcraftlogs_parser(client):
     await client.wait_until_ready()
@@ -15,18 +15,20 @@ async def warcraftlogs_parser(client):
     if channel is not None:
         await warcraftlogs.main_loop(client, channel)
 
-@client.command(description='Shows this week\'s affixes')
+@client.command()
 async def affixes():
+    '''Shows this week\'s affixes'''
     affixes = await mythics.getAffixes()
     if affixes is not None:
         await client.say('This weeks affixes are: ' + affixes)
     else:
         await client.say('Sorry, I couldn\'t get the affixes for some reason. Try again later')
 
-@client.command(description='Get\'s characters highest mythic+ for this week')
+@client.command(help='Show the highest level Mythic+ completed by <character>.\nIf character is not on ' + private.DEFAULT_REALM + ', use <character> <realm>')
 async def highest(*, character: str):
+    '''Show the highest level Mythic+ completed by <character>'''
     character = character.strip()
-    realm = 'borean-tundra'
+    realm = private.DEFAULT_REALM
     if ' ' in character:
         results = character.split(' ', maxsplit=1)
         character = results[0]
