@@ -32,9 +32,9 @@ async def highest(*, character: str):
     if ' ' in character:
         results = character.split(' ', maxsplit=1)
         character = results[0]
-        realm = results[1].replace('\'', '').replace(' ', '-')
+        realm = results[1]
 
-
+    realm = realm.lower().replace('\'', '').replace(' ', '-')
     details = await mythics.getHighest(character, realm)
     if details['success'] == False:
         message = details['message']

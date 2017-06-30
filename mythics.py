@@ -8,13 +8,15 @@ async def getJsonData(url):
 
 async def getAffixes():
     json_affixes = await getJsonData('https://raider.io/api/v1/mythic-plus/affixes?region=US')
-    if 'title' in json_affixes:
+    if not json_affixes is None and 'title' in json_affixes:
         return json_affixes['title']
     else:
         return None
 
 async def getHighest(player, realm):
     json_result = await getJsonData('https://raider.io/api/v1/characters/profile?region=us&realm={0}&name={1}&fields=mythic_plus_weekly_highest_level_runs'.format(realm, player))
+    if json_result is None:
+        return {'success': False, 'message': 'Unable to get Mythic+ data'}
     if 'error' in json_result and 'message'in json_result:
         return {'success': False, 'message': json_result['message']}
     if not 'name' in json_result or not 'mythic_plus_weekly_highest_level_runs' in json_result:
