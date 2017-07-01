@@ -78,6 +78,7 @@ async def ghighest(*, guild: str = None):
     result = await battlenet.getGuildMembers(guild, realm)
     if result['success'] == False:
         await client.say(result['message'])
+        LAST_GHIGHEST = 0
         return
     for member in result['members']:
         if member['level'] < MAX_LEVEL:
