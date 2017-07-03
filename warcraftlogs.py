@@ -35,6 +35,8 @@ async def getZones():
 
 async def getReports(start_time):
     json_reports = await getJsonData(REPORTS_URL.format(private.GUILD_NAME, private.SERVER_NAME, private.REGION, start_time, private.API_KEY))
+    if json_reports is None:
+        return None
     reports = []
     for report in json_reports:
         if (not 'id' in report) or (not 'title' in report) or (not 'owner' in report) or (not 'start' in report) or (not 'zone' in report):
@@ -133,6 +135,9 @@ async def main_loop(client, channel):
     while not client.is_closed:
         print('Getting reports...')
         new_reports = await getReports(last_time)
+        if new_reports is None:
+            print('Error getting reports')
+            continue
         print('Found ' + str(len(new_reports)) + ' reports')
         for report in new_reports:
             if not report in all_reports:
