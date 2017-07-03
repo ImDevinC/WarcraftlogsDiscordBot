@@ -34,7 +34,7 @@ async def affixes():
     '''Shows this week\'s affixes'''
     affixes = await mythics.getAffixes()
     if affixes is not None:
-        await client.say('This weeks affixes: {0}\nNext weeks affixes: {1}\nTwo weeks affixes: {2}'.format(affixes['this_week'], affixes['next_week'], affixes['two_weeks']))
+        await client.say('This weeks affixes: {0}\nNext weeks affixes: {1}'.format(affixes['this_week'], affixes['next_week']))
     else:
         await client.say('Sorry, I couldn\'t get the affixes for some reason. Try again later')
 
