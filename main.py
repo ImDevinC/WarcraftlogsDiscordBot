@@ -60,12 +60,12 @@ async def rank(*, character: str):
     '''Show the current Mythic+ rank for <character>'''
     character = character.strip()
     realm = private.DEFAULT_REALM
-    og_realm = realm
     if ' ' in character:
         results = character.split(' ', maxsplit=1)
         character = results[0]
         realm = results[1]
     
+    og_realm = realm
     if character is None:
         await client.say('Character name is required')
         return
