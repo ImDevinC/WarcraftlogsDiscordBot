@@ -55,6 +55,30 @@ async def highest(*, character: str):
     message = await getHighest(character, realm)
     await client.say(message)
 
+@client.command()
+async def rank(*, character: str):
+    '''Show the current Mythic+ rank for <character>'''
+    character = character.strip()
+    realm = private.DEFAULT_REALM
+    og_realm = realm
+    if ' ' in character:
+        results = character.split(' ', maxsplit=1)
+        character = results[0]
+        realm = results[1]
+    
+    if character is None:
+        await client.say('Character name is required')
+        return
+    ranks = await mythics.getRanks(character, realm)
+    if ranks['success'] == False:
+        await client.say(ranks['message'])
+        return
+
+    
+    message = ranks['name'] + ' is currently ranked ' + str(ranks['rank_overall']['world']) + ' overall, and ' + str(ranks['rank_overall']['realm']) + ' on ' + og_realm + '.\n'
+    message += 'They are also ranked ' + str(ranks['rank_class']['world']) + ' overall, and ' + str(ranks['rank_class']['realm']) + ' on ' + og_realm + ' for ' + ranks['class'] + 's.'
+    await client.say(message)
+
 @client.command(help='Show the highest level Mythic+ completed by all characters in <guild>\nIf guild is not on ' + private.SERVER_NAME + ', use "<guild>" "<realm>"')
 async def ghighest(*, guild: str = None):
     global LAST_GHIGHEST

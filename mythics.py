@@ -57,3 +57,16 @@ async def getHighest(player, realm):
     if not 'dungeon' in dungeon or not 'mythic_level' in dungeon or not 'url' in dungeon:
         return {'success': False, 'message': 'Invalid information returned'}
     return {'success': True, 'name': json_result['name'], 'dungeon': dungeon['dungeon'], 'highest': dungeon['mythic_level'], 'url': dungeon['url']}
+
+async def getRanks(player, realm):
+    json_result = await getJsonData(BASE_URL + 'characters/profile', {'region': 'US', 'realm': realm, 'name': player, 'fields': 'mythic_plus_ranks'})
+    if json_result is None:
+        return {'success': False, 'message': 'Unable to get Mythic+ ranks'}
+    if 'error' in json_result and 'message' in json_result:
+        return {'success': False, 'message': json_result['message']}
+    if not 'name' in json_result or not 'mythic_plus_ranks' in json_result:
+        return {'success': False, 'message': 'Invalid information returned'}
+    ranks = json_result['mythic_plus_ranks']
+    if not 'overall' in ranks or not 'dps' in ranks or not 'healer' in ranks or not 'tank' in ranks or not 'class' in ranks or not 'class_dps' in ranks or not 'class_healer' in ranks or not 'class_tank' in ranks:
+        return {'success': False, 'message': 'Invalid information returned'}
+    return {'success': True, 'name': json_result['name'], 'class': json_result['class'], 'rank_overall': ranks['overall'], 'rank_dps': ranks['dps'], 'rank_healer': ranks['healer'], 'rank_tank': ranks['tank'], 'rank_class': ranks['class'], 'rank_class_dps': ranks['class_dps'], 'rank_class_healer': ranks['class_healer'], 'rank_class_tank': ranks['class_tank']}
