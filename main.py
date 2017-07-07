@@ -74,9 +74,10 @@ async def rank(*, character: str):
         await client.say(ranks['message'])
         return
 
-    
-    message = ranks['name'] + ' is currently ranked ' + str(ranks['rank_overall']['world']) + ' overall, and ' + str(ranks['rank_overall']['realm']) + ' on ' + og_realm + '.\n'
-    message += 'They are also ranked ' + str(ranks['rank_class']['world']) + ' overall, and ' + str(ranks['rank_class']['realm']) + ' on ' + og_realm + ' for ' + ranks['class'] + 's.'
+    message = '{0} is currently ranked {1} worldwide, {2} regionwide, and {3} on {4} for {5}\n'
+    message += 'For {6} {5} they are ranked {7} worldwide, {8} regionwide, and {9} on {4}'
+    spec = ranks['spec']
+    message = message.format(ranks['name'], ranks['rank_' + spec]['world'], ranks['rank_' + spec]['region'], ranks['rank_' + spec]['realm'], og_realm, spec, ranks['class'], ranks['rank_class_' + spec]['world'], ranks['rank_class_' + spec]['region'], ranks['rank_class_' + spec]['realm'])
     await client.say(message)
 
 @client.command(help='Show the highest level Mythic+ completed by all characters in <guild>\nIf guild is not on ' + private.SERVER_NAME + ', use "<guild>" "<realm>"')
