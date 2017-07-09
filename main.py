@@ -5,6 +5,7 @@ import warcraftlogs
 import mythics
 import battlenet
 import time
+import urllib
 
 MAX_LEVEL = 110
 LAST_GHIGHEST = 0
@@ -55,7 +56,7 @@ async def highest(*, character: str):
     message = await getHighest(character, realm)
     await client.say(message)
 
-@client.command()
+@client.command(help='Show the current Mythic+ rank for <character>\nIf character is not on ' + private.DEFAULT_REALM + ', use <character> <realm>')
 async def rank(*, character: str):
     '''Show the current Mythic+ rank for <character>'''
     character = character.strip()
@@ -65,7 +66,6 @@ async def rank(*, character: str):
         character = results[0]
         realm = results[1]
     
-    og_realm = realm
     if character is None:
         await client.say('Character name is required')
         return
@@ -74,11 +74,14 @@ async def rank(*, character: str):
         await client.say(ranks['message'])
         return
 
-    message = '{0} is currently ranked {1} worldwide, {2} regionwide, and {3} on {4} for {5}\n'
-    message += 'For {6} {5} they are ranked {7} worldwide, {8} regionwide, and {9} on {4}'
     spec = ranks['spec']
-    message = message.format(ranks['name'], ranks['rank_' + spec]['world'], ranks['rank_' + spec]['region'], ranks['rank_' + spec]['realm'], og_realm, spec, ranks['class'], ranks['rank_class_' + spec]['world'], ranks['rank_class_' + spec]['region'], ranks['rank_class_' + spec]['realm'])
-    await client.say(message)
+    over = ranks['rank_' + spec]
+    class_rank = ranks['rank_class_' + spec]
+    message = '**Overall {0}**\nWorld: {1}\tRegion: {2}\tRealm: {3}\n\n**{4} {0}**\nWorld: {5}\tRegion: {6}\tRealm: {7}'.format(spec, over['world'], over['region'], over['realm'], ranks['class'], class_rank['world'], class_rank['region'], class_rank['realm'])
+    # print('https://raider.io/characters/us/{0}/{1}'.format(realm.replace(' ', '-'), character))
+    
+    em = discord.Embed(title='{0} on {1}'.format(character, realm), description=message)
+    await client.say(embed=em)
 
 @client.command(help='Show the highest level Mythic+ completed by all characters in <guild>\nIf guild is not on ' + private.SERVER_NAME + ', use "<guild>" "<realm>"')
 async def ghighest(*, guild: str = None):
