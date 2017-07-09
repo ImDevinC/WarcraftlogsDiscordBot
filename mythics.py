@@ -56,7 +56,7 @@ async def getHighest(player, realm):
     dungeon = json_result['mythic_plus_weekly_highest_level_runs'][0]
     if not 'dungeon' in dungeon or not 'mythic_level' in dungeon or not 'url' in dungeon:
         return {'success': False, 'message': 'Invalid information returned'}
-    return {'success': True, 'name': json_result['name'], 'dungeon': dungeon['dungeon'], 'highest': dungeon['mythic_level'], 'url': dungeon['url']}
+    return {'success': True, 'name': json_result['name'], 'realm': json_result['realm'], 'dungeon': dungeon['dungeon'], 'highest': dungeon['mythic_level'], 'url': dungeon['url']}
 
 async def getRanks(player, realm):
     json_result = await getJsonData(BASE_URL + 'characters/profile', {'region': 'US', 'realm': realm, 'name': player, 'fields': 'mythic_plus_ranks'})
@@ -64,9 +64,9 @@ async def getRanks(player, realm):
         return {'success': False, 'message': 'Unable to get Mythic+ ranks'}
     if 'error' in json_result and 'message' in json_result:
         return {'success': False, 'message': json_result['message']}
-    if not 'name' in json_result or not 'mythic_plus_ranks' in json_result:
+    if not 'name' in json_result or not 'mythic_plus_ranks' in json_result or not 'profile_url' in json_result or not 'realm' in json_result:
         return {'success': False, 'message': 'Invalid information returned'}
     ranks = json_result['mythic_plus_ranks']
     if not 'overall' in ranks or not 'dps' in ranks or not 'healer' in ranks or not 'tank' in ranks or not 'class' in ranks or not 'class_dps' in ranks or not 'class_healer' in ranks or not 'class_tank' in ranks:
         return {'success': False, 'message': 'Invalid information returned'}
-    return {'success': True, 'name': json_result['name'], 'class': json_result['class'], 'spec': json_result['active_spec_role'].lower(), 'rank_overall': ranks['overall'], 'rank_dps': ranks['dps'], 'rank_healing': ranks['healer'], 'rank_tank': ranks['tank'], 'rank_class': ranks['class'], 'rank_class_dps': ranks['class_dps'], 'rank_class_healing': ranks['class_healer'], 'rank_class_tank': ranks['class_tank']}
+    return {'success': True, 'name': json_result['name'], 'class': json_result['class'], 'spec': json_result['active_spec_role'].lower(), 'url': json_result['profile_url'], 'realm': json_result['realm'], 'rank_overall': ranks['overall'], 'rank_dps': ranks['dps'], 'rank_healing': ranks['healer'], 'rank_tank': ranks['tank'], 'rank_class': ranks['class'], 'rank_class_dps': ranks['class_dps'], 'rank_class_healing': ranks['class_healer'], 'rank_class_tank': ranks['class_tank']}

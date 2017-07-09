@@ -22,20 +22,16 @@ async def warcraftlogs_parser(client):
 async def getHighest(character, realm):
     realm = realm.lower().replace('\'', '').replace(' ', '-')
     details = await mythics.getHighest(character, realm)
-    if details['success'] == False:
-        message = details['message']
-    elif details['highest'] == 0:
-        message = details['name'] + ' has not completed a Mythic+ this week'
-    else:
-        message = details['name'] + ' has completed a ' + details['dungeon'] + ' +' + str(details['highest'])
-    return message
+    return details
 
 @client.command()
 async def affixes():
     '''Shows this week\'s affixes'''
     affixes = await mythics.getAffixes()
     if affixes is not None:
-        await client.say('This weeks affixes: {0}\nNext weeks affixes: {1}'.format(affixes['this_week'], affixes['next_week']))
+        em = discord.Embed(title='Weekly Affixes', description='This week: {0}\nNext week: {1}'.format(affixes['this_week'], affixes['next_week']), url='https://mythicpl.us')
+        em.set_footer(text='Information provided by mythicpl.us')
+        await client.say(embed=em)
     else:
         await client.say('Sorry, I couldn\'t get the affixes for some reason. Try again later')
 
@@ -53,9 +49,17 @@ async def highest(*, character: str):
         await client.say('Character name is required')
         return
 
-    message = await getHighest(character, realm)
-    await client.say(message)
-
+    result = await getHighest(character, realm)
+    if result['success'] is False:
+        message = result['message']
+        await client.say(message)
+        return
+    
+    message = '{0} has completed a +{1} {2}'.format(result['name'], result['highest'], result['dungeon'])
+    em = discord.Embed(title='{0} on {1}'.format(result['name'], result['realm']), description=message, url=result['url'])
+    em.set_footer(text='Information provided by raider.io', icon_url='https://raider.io/images/favicon.png')
+    await client.say(embed=em)
+    
 @client.command(help='Show the current Mythic+ rank for <character>\nIf character is not on ' + private.DEFAULT_REALM + ', use <character> <realm>')
 async def rank(*, character: str):
     '''Show the current Mythic+ rank for <character>'''
@@ -75,12 +79,18 @@ async def rank(*, character: str):
         return
 
     spec = ranks['spec']
+    if spec == 'dps':
+        print_spec = 'DPS'
+    elif spec == 'healing':
+        print_spec = 'Healing'
+    elif spec == 'tank':
+        print_spec = 'Tanking'
     over = ranks['rank_' + spec]
     class_rank = ranks['rank_class_' + spec]
-    message = '**Overall {0}**\nWorld: {1}\tRegion: {2}\tRealm: {3}\n\n**{4} {0}**\nWorld: {5}\tRegion: {6}\tRealm: {7}'.format(spec, over['world'], over['region'], over['realm'], ranks['class'], class_rank['world'], class_rank['region'], class_rank['realm'])
-    # print('https://raider.io/characters/us/{0}/{1}'.format(realm.replace(' ', '-'), character))
+    message = '**Overall {0}**\nWorld: {1}\tRegion: {2}\tRealm: {3}\n\n**{4} {0}**\nWorld: {5}\tRegion: {6}\tRealm: {7}'.format(print_spec, over['world'], over['region'], over['realm'], ranks['class'], class_rank['world'], class_rank['region'], class_rank['realm'])
     
-    em = discord.Embed(title='{0} on {1}'.format(character, realm), description=message)
+    em = discord.Embed(title='{0} on {1}'.format(ranks['name'], ranks['realm']), description=message, url=ranks['url'])
+    em.set_footer(text='Information provided by raider.io', icon_url='https://raider.io/images/favicon.png')
     await client.say(embed=em)
 
 @client.command(help='Show the highest level Mythic+ completed by all characters in <guild>\nIf guild is not on ' + private.SERVER_NAME + ', use "<guild>" "<realm>"')
@@ -112,10 +122,12 @@ async def ghighest(*, guild: str = None):
         if member['level'] < MAX_LEVEL:
             continue
         result = await getHighest(member['name'], member['realm'])
-        if 'has not completed a Mythic+ this week' in result or 'Could not find requested character' in result:
+        if result['success'] is False or result['highest'] < 1:
             continue
-        message += '\n{0}'.format(result)
-    await client.say(message)
+        message += '\n{0} has completed a +{1} {2}'.format(result['name'], result['highest'], result['dungeon'])
+    em = discord.Embed(title='{0} on {1}'.format(guild, realm), description=message)
+    em.set_footer(text='Information provided by raider.io', icon_url='https://raider.io/images/favicon.png')
+    await client.say(embed=em)
 
 @client.event
 async def on_ready():
