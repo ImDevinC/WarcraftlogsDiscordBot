@@ -49,12 +49,12 @@ async def newReport(report, zones, client, channel):
     json_report = await getJsonData(REPORT_URL.format(report['id'], private.API_KEY))
     if not 'zone' in json_report:
         print('Unable to get zone from report ' + report['id'])
-        return
+        return 0
     zone_id = json_report['zone']
     
     if not 'fights' in json_report:
         print('Unable to get fights from report ' + report['id'])
-        return
+        return 0
 
     bosses_dead = 0
     for fight in json_report['fights']:
@@ -71,7 +71,7 @@ async def newReport(report, zones, client, channel):
     
     if boss_report is None:
         print('Unable to get boss information from report ' + report['id'])
-        return
+        return 0
     
     boss_id = boss_report['boss']
     boss_dead = boss_report['kill']
@@ -89,7 +89,7 @@ async def newReport(report, zones, client, channel):
 
     if zone is None or boss is None:
         print('Unable to get fight information for report ' + report['id'])
-        return
+        return 0
 
     saveTime(report['time'])
     message = report['author'] + ' has uploaded a new log for ' + zone + '. Last attempt: ' + boss + ' is ' + ('not ' if not boss_dead else '') + 'dead' 
@@ -142,5 +142,7 @@ async def main_loop(client, channel):
         for report in new_reports:
             if not report in all_reports:
                 all_reports.append(report)
-                last_time = await newReport(report, zones, client, channel)
+                last_report_time = await newReport(report, zones, client, channel, last_time)
+                if last_report_time > 0:
+                    last_time = last_report_time
         await asyncio.sleep(60 * 5)
