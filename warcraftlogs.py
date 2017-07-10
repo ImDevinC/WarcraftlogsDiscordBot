@@ -142,7 +142,7 @@ async def main_loop(client, channel):
         for report in new_reports:
             if not report in all_reports:
                 all_reports.append(report)
-                last_report_time = await newReport(report, zones, client, channel, last_time)
+                last_report_time = await newReport(report, zones, client, channel)
                 if last_report_time > 0:
                     last_time = last_report_time
         await asyncio.sleep(60 * 5)
