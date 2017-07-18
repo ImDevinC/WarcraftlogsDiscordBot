@@ -3,6 +3,7 @@
 #
 DISCORD_TOKEN = '' # Enter your bot's API token
 DISCORD_CHANNEL = '' # The ID of the Discord channel to connect to
+DISCORD_BOT_CHANNEL = '' # The ID of the Discord channel to send bot output to
 
 #
 # Warcraft Logs Information
