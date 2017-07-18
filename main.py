@@ -9,9 +9,36 @@ import urllib
 
 MAX_LEVEL = 110
 LAST_GHIGHEST = 0
+PLAYER_SCORES = {}
 
 description = '''I'm LogBot! I constantly search for new Warcraft Logs and can provide some other information'''
 client = commands.Bot(command_prefix='!', description=description, pm_help=True)
+
+def get_differences(player, realm, overall, class_rank):
+    scores = PLAYER_SCORES.get('{0}{1}'.format(player, realm))
+    return_scores = None
+    if scores is not None:
+        overall_world_diff = -1 * (overall['world'] - scores['overall']['world'])
+        if overall_world_diff > -1:
+            overall_world_diff = '+{0}'.format(overall_world_diff)
+        overall_region_diff = -1 * (overall['region'] - scores['overall']['region'])
+        if overall_region_diff > -1:
+            overall_region_diff = '+{0}'.format(overall_region_diff)
+        overall_realm_diff = -1 * (overall['realm'] - scores['overall']['realm'])
+        if overall_realm_diff > -1:
+            overall_realm_diff = '+{0}'.format(overall_realm_diff)
+        class_world_diff =  -1 * (class_rank['world'] - scores['class_rank']['world'])
+        if class_world_diff > -1:
+            class_world_diff = '+{0}'.format(class_world_diff)
+        class_region_diff = -1 * (class_rank['region'] - scores['class_rank']['region'])
+        if class_region_diff > -1:
+            class_region_diff = '+{0}'.format(class_region_diff)
+        class_realm_diff = -1 * (class_rank['realm'] - scores['class_rank']['realm'])
+        if class_realm_diff > -1:
+            class_realm_diff = '+{0}'.format(class_realm_diff)
+        return_scores = [[overall_world_diff, overall_region_diff, overall_realm_diff], [class_world_diff, class_region_diff, class_realm_diff]]
+    PLAYER_SCORES['{0}{1}'.format(player, realm)] = {'overall': overall, 'class_rank': class_rank}
+    return return_scores
 
 async def warcraftlogs_parser(client):
     await client.wait_until_ready()
@@ -87,8 +114,11 @@ async def rank(*, character: str):
         print_spec = 'Tanking'
     over = ranks['rank_' + spec]
     class_rank = ranks['rank_class_' + spec]
-    message = '**Overall {0}**\nWorld: {1}\tRegion: {2}\tRealm: {3}\n\n**{4} {0}**\nWorld: {5}\tRegion: {6}\tRealm: {7}'.format(print_spec, over['world'], over['region'], over['realm'], ranks['class'], class_rank['world'], class_rank['region'], class_rank['realm'])
-    
+    diffs = get_differences(ranks['name'], ranks['realm'], over, class_rank)
+    if diffs is None:
+        message = '**Overall {0}**\nWorld: {1}\tRegion: {2}\tRealm: {3}\n\n**{4} {0}**\nWorld: {5}\tRegion: {6}\tRealm: {7}'.format(print_spec, over['world'], over['region'], over['realm'], ranks['class'], class_rank['world'], class_rank['region'], class_rank['realm'])
+    else:
+        message = '**Overall {0}**\nWorld: {1} ({8})\tRegion: {2} ({9})\tRealm: {3} ({10})\n\n**{4} {0}**\nWorld: {5} ({11})\tRegion: {6} ({12})\tRealm: {7} ({13})'.format(print_spec, over['world'], over['region'], over['realm'], ranks['class'], class_rank['world'], class_rank['region'], class_rank['realm'], diffs[0][0], diffs[0][1], diffs[0][2], diffs[1][0], diffs[1][1], diffs[1][2])
     em = discord.Embed(title='{0} on {1}'.format(ranks['name'], ranks['realm']), description=message, url=ranks['url'])
     em.set_footer(text='Information provided by raider.io', icon_url='https://raider.io/images/favicon.png')
     await client.say(embed=em)
