@@ -3,3 +3,4 @@ venv/*
 private.py
 lastTime.conf
 .python-version
+.DS_Store
